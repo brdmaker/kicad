@@ -2,7 +2,7 @@
 # kicad-cli from the bundle, run through the bundle's own dynamic loader (it is a Debian 13 build).
 P=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
 S="$P/usr/share/kicad"
-export KICAD10_SYMBOL_DIR="$S/symbols" KICAD10_FOOTPRINT_DIR="$S/footprints" \
+export KICAD_CONFIG_HOME="$P/config" KICAD10_SYMBOL_DIR="$S/symbols" KICAD10_FOOTPRINT_DIR="$S/footprints" \
        KICAD10_3DMODEL_DIR="$S/3dmodels" KICAD10_TEMPLATE_DIR="$S/template" \
        KICAD_RESOURCES="$S" KICAD_STOCK_DATA_HOME="$S"
 exec "$P/lib64/ld-linux-x86-64.so.2" --library-path "$P/usr/lib/x86_64-linux-gnu:$P/usr/lib" "$P/usr/bin/kicad-cli" "$@"

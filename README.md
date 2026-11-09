@@ -21,7 +21,7 @@ upstream). This branch has no history in common with the source branches.
     /opt/kicad-10.0.8/kicad-cli version
 
 The wrapper starts `kicad-cli` through the bundle's own `ld-linux`, with `KICAD10_*_DIR` pointed at
-the unpacked data, because the host's glibc is older than the bundle's. Needs bash, tar, xz. `install.sh` also links the `_*.kiface` modules into `lib/x86_64-linux-gnu`, where KiCad looks for them when it is started through the bundle's loader.
+the unpacked data, because the host's glibc is older than the bundle's. The installer also writes the symbol and footprint library tables to `PREFIX/config/10.0` (the wrapper points `KICAD_CONFIG_HOME` there); without them ERC and DRC report every library as missing. Needs bash, tar, xz. `install.sh` also links the `_*.kiface` modules into `lib/x86_64-linux-gnu`, where KiCad looks for them when it is started through the bundle's loader.
 
 ## What it is for
 

@@ -19,5 +19,8 @@ if [ "$all3d" = 1 ]; then
 fi
 # KiCad finds its _*.kiface modules next to the loader it was started by (lib/x86_64-linux-gnu)
 for k in "$P"/usr/bin/*.kiface; do ln -sf "../../usr/bin/$(basename "$k")" "$P/lib/x86_64-linux-gnu/$(basename "$k")"; done
+# library tables for the symbol/footprint libraries in the bundle (without them ERC reports every library as missing)
+mkdir -p "$P/config/10.0"
+cp "$P/usr/share/kicad/template/sym-lib-table" "$P/usr/share/kicad/template/fp-lib-table" "$P/config/10.0/"
 install -m 755 "$here/kicad-cli" "$P/kicad-cli"
 echo "installed: $P/kicad-cli version"
