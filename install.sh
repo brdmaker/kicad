@@ -17,5 +17,7 @@ if [ "$all3d" = 1 ]; then
     [ -e "$a" ] || continue; unpack "${a%.part-00}" "$P/usr/share/kicad/3dmodels"
   done
 fi
+# KiCad finds its _*.kiface modules next to the loader it was started by (lib/x86_64-linux-gnu)
+for k in "$P"/usr/bin/*.kiface; do ln -sf "../../usr/bin/$(basename "$k")" "$P/lib/x86_64-linux-gnu/$(basename "$k")"; done
 install -m 755 "$here/kicad-cli" "$P/kicad-cli"
 echo "installed: $P/kicad-cli version"

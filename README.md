@@ -7,7 +7,7 @@ upstream). This branch has no history in common with the source branches.
 
 | file | what |
 |---|---|
-| `kicad-10.0.8-runtime.tar.xz` | `kicad-cli`, the Python `pcbnew` module, every shared library they need (366 files, found from the ELF dependencies) and the image's glibc and loader |
+| `kicad-10.0.8-runtime.tar.xz.part-00`, `-01` | one archive, split for GitHub's 100 MB file limit: `kicad-cli`, the `_*.kiface` modules (eeschema, pcbnew, ...), the Python `pcbnew` module, every shared library they need (538 files) and the image's glibc and loader. `install.sh` joins the parts |
 | `kicad-10.0.8-data.tar.xz` | `usr/share/kicad`: symbols, footprints, templates, resources (no 3D models, no demos) |
 | `3dmodels/kicad-10.0.8-3dmodels-<Library>.tar.xz` | one archive per 3D model library (STEP files, 105 libraries, 3.4 GB unpacked, 0.26 GB packed) |
 | `install.sh`, `unpack3d.sh`, `kicad-cli`, `lib.sh` | install, unpack single 3D libraries, wrapper |
@@ -21,7 +21,7 @@ upstream). This branch has no history in common with the source branches.
     /opt/kicad-10.0.8/kicad-cli version
 
 The wrapper starts `kicad-cli` through the bundle's own `ld-linux`, with `KICAD10_*_DIR` pointed at
-the unpacked data, because the host's glibc is older than the bundle's. Needs bash, tar, xz.
+the unpacked data, because the host's glibc is older than the bundle's. Needs bash, tar, xz. `install.sh` also links the `_*.kiface` modules into `lib/x86_64-linux-gnu`, where KiCad looks for them when it is started through the bundle's loader.
 
 ## What it is for
 
@@ -34,3 +34,5 @@ brdmaker boards (brdmot `ebaz4205/1.0/8x485`, hardware/*). The 8x485 files are K
 Pulled from Docker Hub (`kicad/kicad:10.0.8-amd64-full`), layers unpacked, then repacked with
 `tar | xz`; no file was changed. The GUI binaries (`kicad`, `pcbnew`, ...) are not included.
 Update: pull a newer tag the same way and replace the archives.
+
+Tested on Ubuntu 24.04 (host glibc 2.39): `kicad-cli version` prints 10.0.8, `sch erc` runs on the 8x485 schematic, `pcb drc` on the EBAZ4205 reference board.

@@ -104,4 +104,5 @@ c1b478b5fcc4435d37df4732e7347903233f277ca56a9afe23b9f245bc9abdde  ./3dmodels/kic
 72427acdcebf5ecb6d0c765b1678995ed372cfc710e58bc3054fef7e0eef6128  ./3dmodels/kicad-10.0.8-3dmodels-Valve.tar.xz
 438e9b4502a726844ab1b754db54d6653d1f0e2657a84bb023a1e19ee0a12d23  ./3dmodels/kicad-10.0.8-3dmodels-Varistor.tar.xz
 321ead32e5ed384b711af203bf9d6d694021181e5d0d341a262c2972379663d1  ./kicad-10.0.8-data.tar.xz
-ac3828a86bb89709b8496d468e24e4577f765a7a907935dfe42e93628d1e4ad0  ./kicad-10.0.8-runtime.tar.xz
+c9a1c5aefdd429cc8f4c99d0cdda8126d2cf5e21e427702d35f7222d70878ab2  ./kicad-10.0.8-runtime.tar.xz.part-00
+54cf276692acc7f9df4a18d0b4814fe564a393e9f467ecd899c42f0dec74d2c5  ./kicad-10.0.8-runtime.tar.xz.part-01
