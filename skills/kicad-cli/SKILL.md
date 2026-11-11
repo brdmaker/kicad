@@ -75,8 +75,12 @@ Existing `KICAD_SYMBOL_DIR`, `KICAD_FOOTPRINT_DIR` and `KICAD_3DMODEL_DIR`
   saved by it may not open in older stable KiCad releases.
 - There is no Python `pcbnew` module in this build. For scripting use the IPC
   API client (`pip install kicad-python`), which needs a running KiCad.
-- A Specctra **SES import** (routed result from an autorouter) is not available
-  in the CLI; only DSN export is.
+- **Autorouting is half covered.** `pcb export specctra` writes the DSN, but this
+  CLI cannot import the router's routed result (SES), and without Python
+  `pcbnew` there is no scripted way to do it here. In the current workflow that
+  step still goes through the older KiCad bundle's raw `_pcbnew` module, outside
+  these skills: export the DSN here, route externally, then import the SES with
+  that bundle and bring the board back for DRC and export.
 - The system libraries wxWidgets, OpenCascade, Boost and others must be
   installed. If any are missing, `scripts/kicad-cli` lists them and prints the
   apt command for Debian/Ubuntu 24.04.

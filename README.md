@@ -25,7 +25,13 @@ what is missing. The branch is about 75 MB, mostly the compressed binaries.
 
 - Everything here was run against the bundled build. Generated symbols and
   footprints still need checking against the part's datasheet.
-- SolidCraft's CLI is built locally by `kicad-3d/scripts/setup-solidcraft.sh`
-  and is not part of this repository.
+- SolidCraft's CLI is downloaded by `kicad-3d/scripts/setup-solidcraft.sh` from
+  the project's own GitHub releases and is not part of this repository.
+- Datasheet and release downloads go through the sandbox's network policy. When
+  a host is blocked, the scripts print `NETWORK_BLOCKED host=...` and the skills
+  tell Claude to ask the user to allow that host.
+- Not covered: importing an autorouter's SES result. The CLI cannot do it and
+  this build has no Python `pcbnew`; that step still goes through the older
+  KiCad bundle's `_pcbnew` module.
 - KiCad itself is GPLv3 and its libraries are CC-BY-SA 4.0 with an exception for
   use in designs; see the upstream repositories for the exact terms.

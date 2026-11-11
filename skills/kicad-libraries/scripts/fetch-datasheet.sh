@@ -35,11 +35,27 @@ NAME="$(printf '%s' "$NAME" | sed -E 's/[^A-Za-z0-9._-]+/_/g')"
 DIR="$PROJ/datasheets"
 mkdir -p "$DIR"
 TMP="$(mktemp "$DIR/.dl.XXXXXX")"
-trap 'rm -f "$TMP"' EXIT
 
-# Some vendors refuse requests without a browser-like agent
-if ! curl -fsSL --max-time 180 -A "Mozilla/5.0 (X11; Linux x86_64)" -o "$TMP" "$URL"; then
-    echo "error: download failed: $URL" >&2
+# Some vendors refuse requests without a browser-like agent.
+# -w prints the last URL tried, which is the host to blame after a redirect.
+ERR="$(mktemp)"
+trap 'rm -f "$TMP" "$ERR"' EXIT
+rc=0
+LAST="$(curl -fsSL --max-time 180 -A "Mozilla/5.0 (X11; Linux x86_64)" -w '%{url_effective}' \
+        -o "$TMP" "$URL" 2>"$ERR")" || rc=$?
+if [ "$rc" -ne 0 ]; then
+    cat "$ERR" >&2
+    HOST="$(printf '%s' "${LAST:-$URL}" | sed -E 's#^[a-z]+://([^/:?]+).*#\1#')"
+    # The sandbox's egress proxy refuses hosts that are not on the environment's
+    # allowed list. With -f curl reports that as a plain 403, so probe the failing
+    # host again without -f, where it shows as 'CONNECT tunnel failed'.
+    if curl -sS -I --max-time 30 -o /dev/null "${LAST:-$URL}" 2>&1 | grep -q 'CONNECT tunnel failed'; then
+        echo "error: the network proxy blocked the host '$HOST'" >&2
+        echo "NETWORK_BLOCKED host=$HOST" >&2
+        echo "hint: in Claude Code on the web, ask the user to allow this host (see the kicad-libraries skill, step 1), then run this again" >&2
+    else
+        echo "error: download failed (curl exit $rc): $URL" >&2
+    fi
     exit 1
 fi
 if [ "$(head -c 5 "$TMP")" != "%PDF-" ]; then

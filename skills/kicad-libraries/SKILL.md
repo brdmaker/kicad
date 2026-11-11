@@ -89,8 +89,24 @@ All paths are relative to the project folder; `PROJ` is its name and
    `<part number> datasheet pdf`), then
    `scripts/fetch-datasheet.sh -p PROJECT_DIR -n PARTNUMBER URL`.
    It stores `datasheets/PARTNUMBER.pdf`, refuses anything that is not a PDF and
-   logs the source in `datasheets/SOURCES.md`. If the host is blocked or needs a
-   login, ask the user for the file. Do not invent dimensions or pinouts.
+   logs the source in `datasheets/SOURCES.md`. Do not invent dimensions or
+   pinouts. If the PDF needs a login, ask the user for the file.
+
+   **If the script prints `NETWORK_BLOCKED host=H`**, the session's network
+   policy does not allow `H`; vendor sites usually are not on it. In Claude Code
+   on the web, ask for access, and the user can approve it:
+   1. Call `get_environment` (no arguments).
+   2. Say in one sentence which host and why, for example "Allow `www.ti.com`
+      so I can download the LM358 datasheet."
+   3. Call `update_environment` with `environment_name` and `applies_to` copied
+      exactly from `get_environment`, `add_allowed_hosts: ["H"]` and a short
+      `reason`. The user gets an approval prompt for it.
+   4. After approval wait up to about 30 seconds, then run the fetch again.
+
+   Ask for exact hostnames only (no wildcards, no switch to unrestricted
+   network). Vendor links often redirect to another host such as a CDN; the
+   script names the host that failed, so repeat for that one. Ask once per host:
+   if the user declines, ask them for the PDF instead and do not ask again.
 2. **Read it.** Take the pin table and the recommended land pattern (not the
    package outline alone) from the PDF, and write the numbers with page
    references in `datasheets/PARTNUMBER-notes.md` before generating anything.

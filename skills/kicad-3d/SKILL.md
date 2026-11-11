@@ -55,12 +55,17 @@ STEP or GLB export for anything where the components matter.
 When a footprint has no 3D model (a part made with the `kicad-libraries` skill,
 or one the library lacks):
 
-1. Get SolidCraft's CLI once: `scripts/setup-solidcraft.sh`. It clones
-   `github.com/brdmaker/solidcraft` and builds `solidcraft-cli` locally
-   (about 20 minutes on 4 cores, then cached in `~/.cache/solidcraft-skill`).
-   Set `SOLIDCRAFT_CLI` to use an existing binary. The binary is built per user
-   and not shipped here, because SolidCraft's brand licence restricts
-   distributing builds under its name.
+1. Get SolidCraft's CLI once: `scripts/setup-solidcraft.sh`. It downloads the
+   official Linux package from SolidCraft's GitHub releases (about 100 MB, a few
+   seconds), takes `solidcraft-cli` out of it and keeps it in
+   `~/.cache/solidcraft-skill`. It needs `github.com` and
+   `release-assets.githubusercontent.com` to be reachable; if the network policy
+   blocks them, request access the same way as for datasheets (see the
+   `kicad-libraries` skill). Set `SOLIDCRAFT_CLI` to use an existing binary,
+   `-t TAG` to pin a release, or `-b` to build from source instead (about 20
+   minutes). The binary is downloaded from the project by each user and is not
+   stored in this repository. The scripts here were checked with release 0.30.1
+   and with a 0.40.0-rc.4 source build; both gave identical models.
 2. `scripts/new-3d-model.py KIND NAME -o PROJECT/3dshapes/NAME.step ...` with the
    same pad dimensions as the footprint plus the body height and lead sizes from
    the datasheet's package drawing. Kinds: `chip`, `dual`, `quad`, `dip`, `row`.
