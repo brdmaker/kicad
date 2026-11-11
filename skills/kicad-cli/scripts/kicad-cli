@@ -1,0 +1,65 @@
+#!/bin/sh
+# Run the bundled kicad-cli. The bundle is unpacked on first use into
+# $KICAD_CLI_HOME (default: ~/.cache/kicad-cli-skill).
+#
+# Library locations are exported when present:
+#   symbols and footprints  from scripts/install-libs.sh
+#   3D models               from scripts/fetch-3d-models.sh (default clone path)
+# Existing KICAD_*_DIR variables are left untouched.
+
+set -eu
+
+SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+BASE="${KICAD_CLI_HOME:-${XDG_CACHE_HOME:-${HOME:-/tmp}/.cache}/kicad-cli-skill}"
+BUNDLE="$BASE/kicad-cli-linux-x86_64"
+
+if [ "$(uname -s)" != "Linux" ] || [ "$(uname -m)" != "x86_64" ]; then
+    echo "error: the bundled kicad-cli is Linux x86_64 only (this is $(uname -s) $(uname -m))" >&2
+    exit 1
+fi
+
+# kicad-cli aborts when HOME is empty
+: "${HOME:=/tmp}"
+export HOME
+
+if [ ! -x "$BUNDLE/bin/kicad-cli" ]; then
+    echo "Unpacking kicad-cli into $BASE ..." >&2
+    mkdir -p "$BASE"
+    tar -xJf "$SKILL_DIR/assets/kicad-cli-linux-x86_64.tar.xz" -C "$BASE"
+fi
+
+export LD_LIBRARY_PATH="$BUNDLE/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+# Report missing system libraries once, with the way to install them
+if [ ! -f "$BASE/.deps-checked" ]; then
+    MISSING="$(ldd "$BUNDLE/bin/kicad-cli" "$BUNDLE"/bin/*.kiface 2>/dev/null | grep 'not found' | sort -u || true)"
+    if [ -n "$MISSING" ]; then
+        echo "error: missing system libraries:" >&2
+        echo "$MISSING" >&2
+        echo "On Debian/Ubuntu (24.04) install the KiCad build dependencies:" >&2
+        echo "  sudo apt-get install -y libwxgtk3.2-dev libwxgtk-webview3.2-dev libocct-modeling-algorithms-dev \\" >&2
+        echo "    libocct-data-exchange-dev libocct-visualization-dev libocct-ocaf-dev libboost-all-dev \\" >&2
+        echo "    libngspice0-dev libgit2-dev libnng-dev libprotobuf-dev libcairo2-dev libzint-dev libpoppler-glib-dev" >&2
+        exit 1
+    fi
+    touch "$BASE/.deps-checked"
+fi
+
+setvar() {
+    # setvar NAME DIR : export NAME and its KICAD10_ form when DIR exists
+    [ -d "$2" ] || return 0
+    eval "[ -n \"\${KICAD_$1:-}\" ]" || export "KICAD_$1=$2"
+    eval "[ -n \"\${KICAD10_$1:-}\" ]" || export "KICAD10_$1=$2"
+}
+
+setvar SYMBOL_DIR "$BASE/kicad-symbols"
+setvar FOOTPRINT_DIR "$BASE/kicad-footprints"
+setvar 3DMODEL_DIR "${KICAD_3DMODEL_CACHE:-$HOME/.cache/kicad-packages3D}"
+# Boards saved by older KiCad versions refer to their own versioned names
+for v in 6 7 8 9; do
+    d="${KICAD_3DMODEL_CACHE:-$HOME/.cache/kicad-packages3D}"
+    [ -d "$d" ] || continue
+    eval "[ -n \"\${KICAD${v}_3DMODEL_DIR:-}\" ]" || export "KICAD${v}_3DMODEL_DIR=$d"
+done
+
+exec "$BUNDLE/bin/kicad-cli" "$@"
