@@ -25,8 +25,9 @@ what is missing. The branch is about 75 MB, mostly the compressed binaries.
 
 - Everything here was run against the bundled build. Generated symbols and
   footprints still need checking against the part's datasheet.
-- SolidCraft's CLI is downloaded by `kicad-3d/scripts/setup-solidcraft.sh` from
-  the project's own GitHub releases and is not part of this repository.
+- SolidCraft's CLI is fetched by `kicad-3d/scripts/setup-solidcraft.sh` from the
+  prebuilt `bin-cli-*` branch of `brdmaker/solidcraft` (checksum verified), with
+  the official release as a fallback. It is not part of this repository.
 - Datasheet and release downloads go through the sandbox's network policy. When
   a host is blocked, the scripts print `NETWORK_BLOCKED host=...` and the skills
   tell Claude to ask the user to allow that host.

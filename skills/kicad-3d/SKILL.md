@@ -55,17 +55,24 @@ STEP or GLB export for anything where the components matter.
 When a footprint has no 3D model (a part made with the `kicad-libraries` skill,
 or one the library lacks):
 
-1. Get SolidCraft's CLI once: `scripts/setup-solidcraft.sh`. It downloads the
-   official Linux package from SolidCraft's GitHub releases (about 100 MB, a few
-   seconds), takes `solidcraft-cli` out of it and keeps it in
-   `~/.cache/solidcraft-skill`. It needs `github.com` and
-   `release-assets.githubusercontent.com` to be reachable; if the network policy
-   blocks them, request access the same way as for datasheets (see the
-   `kicad-libraries` skill). Set `SOLIDCRAFT_CLI` to use an existing binary,
-   `-t TAG` to pin a release, or `-b` to build from source instead (about 20
-   minutes). The binary is downloaded from the project by each user and is not
-   stored in this repository. The scripts here were checked with release 0.30.1
-   and with a 0.40.0-rc.4 source build; both gave identical models.
+1. Get SolidCraft's CLI once: `scripts/setup-solidcraft.sh`. By default it takes
+   the prebuilt binary from the newest `bin-cli-*` branch of
+   `github.com/brdmaker/solidcraft` (an orphan branch with `solidcraft-cli.gz`
+   and `SHA256SUMS`), fetched over git in a few seconds. It verifies the checksum
+   before installing and refuses on a mismatch. The branch is Linux x86_64 only;
+   elsewhere, or if the branch cannot be fetched, it falls back to the official
+   release package. The result is in `~/.cache/solidcraft-skill/bin/`, with
+   SolidCraft's agent skills copied to `~/.cache/solidcraft-skill/skills/`
+   (`solidcraft-modeling/reference.md` lists the commands; read it before
+   writing a longer script than `new-3d-model.py` produces).
+   Other sources: `-R` for the official release, `-B BRANCH` for a specific
+   prebuilt branch, `-b` to build from source (about 20 minutes), or
+   `SOLIDCRAFT_CLI` to use an existing binary. If the network policy blocks
+   `github.com`, the script prints `NETWORK_BLOCKED host=...`; request access as
+   described in the `kicad-libraries` skill. The binary is not stored in this
+   repository. The branch's 0.40.0-rc.4 binary produced byte-identical models to
+   a source build of the same commit, and a 0.30.1 release gave the same sizes
+   and positions.
 2. `scripts/new-3d-model.py KIND NAME -o PROJECT/3dshapes/NAME.step ...` with the
    same pad dimensions as the footprint plus the body height and lead sizes from
    the datasheet's package drawing. Kinds: `chip`, `dual`, `quad`, `dip`, `row`.
