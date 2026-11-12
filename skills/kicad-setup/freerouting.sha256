@@ -1,0 +1,5 @@
+# Pinned hashes of the Freerouting build this skill was written against:
+# brdmaker/freerouting, branch "binaries", commit bbbdf127, built from freerouting master 099368c6 (v2.5.1-SNAPSHOT).
+# setup-freerouting.sh refuses other files unless run with -A.
+c032085c11a94e735239a0b440cc9039ec47e3326e5f07ed5f73c58e9a46e08d  freerouting.jar
+1c1ab4d72a23c4e9bc6c9ada6dd1981f2bcbc0d332e92b58bee99fc9e89fdb71  linux-x64/jre25-freerouting-linux-x64.tar.xz
